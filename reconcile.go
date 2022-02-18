@@ -2,18 +2,18 @@ package reconcile
 
 import "golang.org/x/exp/slices"
 
-// Action is results returned by Plan function. It contains 
+// Action is results returned by Plan function. It contains
 // the items to add to or delete from the current observed list
 // to reach to the desired state.
 type Action[T comparable] struct {
 	// The list of items to add to the current list.
-	Adds    []T
+	Adds []T
 	// The list of items to delete from the current list.
 	Deletes []T
 }
 
-// Plan takes desired lists and current observed lists and decideds 
-// what action to take (which item to add to or delete from the current 
+// Plan takes desired lists and current observed lists and decideds
+// what action to take (which item to add to or delete from the current
 // list) to reach to the given desired list. The results are returns as Action.
 func Plan[V comparable](desireds []V, currents []V) *Action[V] {
 	var (

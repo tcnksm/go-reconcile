@@ -83,6 +83,24 @@ var intCases = map[string]struct {
 	},
 }
 
+type testStruct struct {
+	id int
+}
+
+var structCases = map[string]struct {
+	desireds, currents []testStruct
+	want               *Action[testStruct]
+}{
+	"AddAndDelete": {
+		[]testStruct{testStruct{1}, testStruct{2}, testStruct{3}},
+		[]testStruct{testStruct{1}, testStruct{2}, testStruct{4}},
+		&Action[testStruct]{
+			Adds:    []testStruct{testStruct{3}},
+			Deletes: []testStruct{testStruct{4}},
+		},
+	},
+}
+
 func TestPlan(t *testing.T) {
 	for name, tc := range stringCases {
 		t.Run(fmt.Sprintf("String/%s", name), func(t *testing.T) {
@@ -96,6 +114,14 @@ func TestPlan(t *testing.T) {
 		t.Run(fmt.Sprintf("Int/%s", name), func(t *testing.T) {
 			got := Plan(tc.desireds, tc.currents)
 			if diff := cmp.Diff(tc.want, got); diff != "" {
+				t.Fatalf("Plan() mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
+	for name, tc := range structCases {
+		t.Run(fmt.Sprintf("Struct/%s", name), func(t *testing.T) {
+			got := Plan(tc.desireds, tc.currents)
+			if diff := cmp.Diff(tc.want, got, cmp.AllowUnexported(testStruct{})); diff != "" {
 				t.Fatalf("Plan() mismatch (-want +got):\n%s", diff)
 			}
 		})
